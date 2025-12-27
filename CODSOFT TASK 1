@@ -1,0 +1,113 @@
+# CODSOFT Python Programming Internship
+# Task 1: To-Do List Application with File Storage
+# Submitted by: [UTKARSH UPADHYAY]
+
+import sys
+import os
+
+FILENAME = "tasks.txt"
+
+def load_tasks():
+    """Load old tasks from a file..."""
+    tasks = []
+    if os.path.exists(FILENAME):
+        with open(FILENAME, "r") as file:
+            for line in file:
+                tasks.append(line.strip())
+    return tasks
+
+def save_tasks(tasks):
+    """To save tasks permanently in a file.."""
+    with open(FILENAME, "w") as file:
+        for task in tasks:
+            file.write(task + "\n")
+
+def show_menu():
+    print("\n--- 📝 SMART TO-DO LIST ---")
+    print("1. View Tasks")
+    print("2. Add Task")
+    print("3. Update Task")
+    print("4. Remove Task")
+    print("5. Exit")
+    print("-" * 25)
+
+def main():
+    tasks = load_tasks()
+    
+    print("Welcome back to your To-Do List!")
+    
+    while True:
+        show_menu()
+        choice = input("Select an option (1-5): ").strip()
+
+        # 1. View Tasks
+        if choice == '1':
+            print("\n--- YOUR CURRENT TASKS ---")
+            if not tasks:
+                print("Your list is empty. Add some tasks first!")
+            else:
+                print(f"{'No.':<5} | {'Task Description'}")
+                print("-" * 25)
+                for index, task in enumerate(tasks, start=1):
+                    print(f"{index:<5} | {task}")
+            
+        # 2. Add Task
+        elif choice == '2':
+            new_task = input("Enter the task description: ").strip()
+            if new_task:
+                tasks.append(new_task)
+                save_tasks(tasks) # Auto-save file after list update.
+                print(f"✅ Success: '{new_task}' added.")
+            else:
+                print("⚠️ Error: Task cannot be empty!")
+
+        # 3. Update Task
+        elif choice == '3':
+            if not tasks:
+                print("Nothing to update.")
+                continue
+            
+            try:
+                task_num = int(input("Enter task number to update: "))
+                if 1 <= task_num <= len(tasks):
+                    old_task = tasks[task_num - 1]
+                    updated_text = input(f"New description for '{old_task}': ").strip()
+                    
+                    if updated_text:
+                        tasks[task_num - 1] = updated_text
+                        save_tasks(tasks) # save file after update
+                        print("✅ Task updated successfully!")
+                    else:
+                        print("⚠️ Description cannot be empty.")
+                else:
+                    print(f"⚠️ Invalid number! Range: 1-{len(tasks)}.")
+            except ValueError:
+                print("⚠️ Please enter a number.")
+
+        # 4. Remove Task
+        elif choice == '4':
+            if not tasks:
+                print("Nothing to remove.")
+                continue
+                
+            try:
+                task_num = int(input("Enter task number to remove: "))
+                if 1 <= task_num <= len(tasks):
+                    removed = tasks.pop(task_num - 1)
+                    save_tasks(tasks) # Update file after task removal
+                    print(f"❌ Removed: {removed}")
+                else:
+                    print("⚠️ Invalid task number.")
+            except ValueError:
+                print("⚠️ Please enter a valid number.")
+
+        # 5. Exit
+        elif choice == '5':
+            print("Tasks saved. Have a great day!")
+            sys.exit()
+
+        else:
+            print("❌ Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
